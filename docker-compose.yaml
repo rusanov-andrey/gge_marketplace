@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+
+  web:
+    build: .
+    restart: always
+    command: python gge_marketplace/manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SECRET_KEY
+      - CELERY_BROKER_URL
+      - SQLITE_DB_DIR=/app/db
+    volumes:
+      - sqlite_data:/app/db
+    depends_on:
+      - rabbitmq
+
+  celery:
+    build: .
+    restart: always
+    command: celery -A gge_marketplace.config worker --loglevel=info
+    environment:
+      - DJANGO_SECRET_KEY
+      - CELERY_BROKER_URL
+      - SQLITE_DB_DIR=/app/db
+    volumes:
+      - sqlite_data:/app/db
+    depends_on:
+      - rabbitmq
+
+volumes:
+  sqlite_data:

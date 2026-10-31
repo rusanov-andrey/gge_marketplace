@@ -1,0 +1,39 @@
+[project]
+name = "gge-marketplace"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "rusanov-andrey", email = "rusanov@bk.ru" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "attrs>=26.1.0",
+    "django==5.2.17",
+    "djangorestframework>=3.18.3",
+]
+
+[project.scripts]
+gge-marketplace = "gge_marketplace:main"
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "django-stubs==6.1.1",
+    "djangorestframework-stubs==3.16.9",
+    "mypy==2.4.0",
+    "ruff>=0.17.3",
+]
+
+[tool.ruff.lint]
+# Игнорировать ВСЕ правила линтера (ALL) для файлов в папках migrations
+per-file-ignores = { "**/migrations/*.py" = ["ALL"] }
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "gge_marketplace.config.settings"
