@@ -21,7 +21,7 @@ class Order(Timestamped):
     items: list[OrderItem]
 
     def update_total_price(self):
-        self.total_price = sum(item.price_on_buy for item in self.items)
+        self.total_price = sum(item.price_on_buy * item.quantity for item in self.items)
 
     def add_item(self, item: OrderItem):
         self.items.append(item)
