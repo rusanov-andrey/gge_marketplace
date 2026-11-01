@@ -5,7 +5,7 @@ from .models import Product
 
 class ProductRepository(ABC):
     @abstractmethod
-    def get_by_id(self, product_id: int) -> Product | None:
+    def get_by_id(self, product_id: int) -> Product:
         pass
 
     @abstractmethod

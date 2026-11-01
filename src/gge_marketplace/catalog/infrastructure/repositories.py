@@ -1,8 +1,8 @@
-from gge_marketplace.catalog.domain.exceptions import ProductNotFoundError
+from gge_marketplace.catalog.domain.exceptions import ProductNotFoundDomainException
 from gge_marketplace.catalog.domain.models import Product
 from gge_marketplace.catalog.domain.repositories import ProductRepository
 from gge_marketplace.catalog.infrastructure.models import Product as DbProduct
-from gge_marketplace.common.domain.exceptions import DomainValidationError
+from gge_marketplace.common.domain.exceptions import ValidationDomainException
 from gge_marketplace.common.infrastructure.repositories import translate_db_errors
 
 
@@ -18,7 +18,7 @@ class DjangoProductRepository(ProductRepository):
         try:
             db_product: DbProduct = DbProduct.objects.get(pk=product_id)
         except DbProduct.DoesNotExist:
-            raise ProductNotFoundError(product_id)
+            raise ProductNotFoundDomainException(product_id)
 
         return ProductMapper.to_domain(db_product)
 
@@ -31,7 +31,7 @@ class DjangoProductRepository(ProductRepository):
         return ProductMapper.to_domain(db_product)
 
     @translate_db_errors({
-        'stock_keeping_unit': DomainValidationError(field='stock_keeping_unit', message='Артикул уже занят'),
+        'stock_keeping_unit': ValidationDomainException(field='stock_keeping_unit', message='Артикул уже занят'),
     })
     def add(self, product: Product) -> Product:
         db_product: DbProduct = DbProduct.objects.create(
@@ -43,13 +43,14 @@ class DjangoProductRepository(ProductRepository):
         return ProductMapper.to_domain(db_product)
 
     @translate_db_errors({
-        'stock_keeping_unit': DomainValidationError(field='stock_keeping_unit', message='Артикул уже занят'),
+        'stock_keeping_unit': ValidationDomainException(field='stock_keeping_unit', message='Артикул уже занят'),
     })
     def update(self, product: Product) -> Product:
         try:
+            assert product.id is not None
             db_product: DbProduct = DbProduct.objects.get(pk=product.id)
         except DbProduct.DoesNotExist:
-            raise ProductNotFoundError(product.id)
+            raise ProductNotFoundDomainException(product.id)
 
         db_product = ProductMapper.to_orm(product, db_product)
         db_product.save()
@@ -61,7 +62,7 @@ class DjangoProductRepository(ProductRepository):
         try:
             db_product: DbProduct = DbProduct.objects.get(pk=product_id)
         except DbProduct.DoesNotExist:
-            raise ProductNotFoundError(product_id)
+            raise ProductNotFoundDomainException(product_id)
 
         product = ProductMapper.to_domain(db_product)
 
