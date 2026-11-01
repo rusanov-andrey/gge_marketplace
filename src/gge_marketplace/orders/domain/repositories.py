@@ -13,10 +13,6 @@ class OrderRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_user(self, user_id: str) -> list[Order]:
-        pass
-
-    @abstractmethod
     def add(self, order: Order) -> Order:
         pass
 

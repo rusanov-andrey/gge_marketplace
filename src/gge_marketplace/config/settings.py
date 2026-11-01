@@ -21,6 +21,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ['true', '1']
 ALLOWED_HOSTS: list[str] = []
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+MEDIA_ROOT = os.environ['FILE_STORAGE_BASE_PATH']
 
 
 # Application definition
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'gge_marketplace.catalog.apps.CatalogConfig',
     'gge_marketplace.orders.apps.OrdersConfig',
+    'gge_marketplace.pipelines.apps.PipelinesConfig',
 ]
 
 MIDDLEWARE = [

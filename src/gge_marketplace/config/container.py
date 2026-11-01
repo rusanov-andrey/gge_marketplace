@@ -14,6 +14,14 @@ from gge_marketplace.orders.application.order import (
     UpdateItemInOrderUseCase,
 )
 from gge_marketplace.orders.infrastructure.repositories import DjangoOrderRepository
+from gge_marketplace.pipelines.application.order_loader import (
+    InitializePipelineUseCase,
+    LoadOrdersFromXlsxToStagingUseCase,
+)
+from gge_marketplace.pipelines.application.order_transformer import (
+    TransformStagingToOrdersUseCase,
+)
+from gge_marketplace.pipelines.infrastructure.file_storage import TaskFileStorage
 
 
 class AppContainer:
@@ -21,6 +29,7 @@ class AppContainer:
         self.product_repository = DjangoProductRepository()
         self.order_repository = DjangoOrderRepository()
         self.uow = DjangoUnitOfWork()
+        self.task_file_storage = TaskFileStorage()
 
     def create_product_use_case(self) -> CreateProductUseCase:
         return CreateProductUseCase(repository=self.product_repository)
@@ -48,6 +57,15 @@ class AppContainer:
 
     def get_item_from_order_use_case(self) -> GetItemFromOrderUseCase:
         return GetItemFromOrderUseCase(repository=self.order_repository)
+
+    def initialize_pipeline_use_case(self) -> InitializePipelineUseCase:
+        return InitializePipelineUseCase(uow=self.uow, storage_service=self.task_file_storage)
+
+    def load_orders_from_xlsx_to_staging_use_case(self) -> LoadOrdersFromXlsxToStagingUseCase:
+        return LoadOrdersFromXlsxToStagingUseCase(uow=self.uow, storage_service=self.task_file_storage)
+
+    def transform_staging_to_orders_use_case(self) -> TransformStagingToOrdersUseCase:
+        return TransformStagingToOrdersUseCase(uow=self.uow, product_repository=self.product_repository, order_repository=self.order_repository)
 
 
 container = AppContainer()

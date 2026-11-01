@@ -26,9 +26,6 @@ class DjangoOrderRepository(OrderRepository):
 
         return OrderMapper.to_domain(db_order)
 
-    def get_by_user(self, user_id: str) -> list[Order]:
-        pass
-
     @translate_db_errors({
         'foreign key constraint failed': ValidationDomainException(field='user_id', message='Пользователь не найден'),
     })
