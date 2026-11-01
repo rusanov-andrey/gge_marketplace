@@ -11,3 +11,5 @@ class Product(TimeStampedModel):
 
     class Meta:
         app_label = 'gge_marketplace_catalog'
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товары'

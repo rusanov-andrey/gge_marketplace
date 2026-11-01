@@ -2,25 +2,29 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import exception_handler
 
-from gge_marketplace.common.domain.exceptions import DomainError, DomainObjectNotFoundError, DomainValidationError
+from gge_marketplace.common.domain.exceptions import (
+    DomainException,
+    ObjectNotFoundDomainException,
+    ValidationDomainException,
+)
 
 
 def api_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
-    if isinstance(exc, DomainValidationError):
+    if isinstance(exc, ValidationDomainException):
         return Response(
-            {'details': {exc.field: [exc.message]}},
+            {exc.field: [exc.message]},
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    if isinstance(exc, DomainObjectNotFoundError):
+    if isinstance(exc, ObjectNotFoundDomainException):
         return Response(
             {'details': [str(exc)]},
             status=status.HTTP_404_NOT_FOUND
         )
 
-    if isinstance(exc, DomainError):
+    if isinstance(exc, DomainException):
         return Response(
             {'details': [str(exc)]},
             status=status.HTTP_400_BAD_REQUEST

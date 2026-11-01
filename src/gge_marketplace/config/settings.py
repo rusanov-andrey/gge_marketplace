@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'gge_marketplace.catalog.apps.CatalogConfig',
+    'gge_marketplace.orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [
@@ -111,6 +112,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Email
