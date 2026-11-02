@@ -157,7 +157,7 @@ LOGGING = {
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'GGE Marketplace backend',
-    'DESCRIPTION': 'API для управления пайплайнами импорта и обработки данных (XLSX в Staging и Orders)',
+    'DESCRIPTION': 'API для GGE Marketplace backend',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
