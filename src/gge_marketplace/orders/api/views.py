@@ -1,8 +1,11 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from gge_marketplace.config.container import container
 from gge_marketplace.orders.api.serializers import (
+    AnalyticsRequestSerializer,
+    AnalyticsResponseSerializer,
     OrderCreateSerializer,
     OrderItemCreateSerializer,
     OrderItemResponseSerializer,
@@ -88,4 +91,27 @@ class OrderItemDetailAPIView(APIView):
         item = use_case.execute(order_id=order_id, item_id=item_id)
 
         response_serializer = OrderItemResponseSerializer(item)
+        return Response(response_serializer.data)
+
+
+class OrderAnalyticsAPIView(APIView):
+
+    @extend_schema(
+        summary="Аналитика объемов продаж товаров",
+        description="Возвращает агрегированную информацию о количестве проданных единиц и выручке по каждому SKU за указанный период времени.",
+        request=AnalyticsRequestSerializer,
+        responses={200: AnalyticsResponseSerializer(many=True)}
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = AnalyticsRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        use_case = container.get_product_sales_analytics_use_case()
+
+        analytics_data = use_case.execute(
+            date_from=serializer.validated_data['date_from'],
+            date_to=serializer.validated_data['date_to']
+        )
+
+        response_serializer = AnalyticsResponseSerializer(analytics_data, many=True)
         return Response(response_serializer.data)

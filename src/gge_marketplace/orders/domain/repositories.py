@@ -1,6 +1,7 @@
+import datetime
 from abc import ABC, abstractmethod
 
-from .models import Order
+from .models import Order, ProductAnalyticsItem
 
 
 class OrderRepository(ABC):
@@ -24,3 +25,10 @@ class OrderRepository(ABC):
     def delete(self, order_id: int) -> Order:
         pass
 
+    @abstractmethod
+    def get_product_sales_analytics(
+            self,
+            date_from: datetime.date,
+            date_to: datetime.date
+    ) -> list[ProductAnalyticsItem]:
+        pass

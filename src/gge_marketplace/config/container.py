@@ -5,6 +5,7 @@ from gge_marketplace.catalog.application.product import (
 )
 from gge_marketplace.catalog.infrastructure.repositories import DjangoProductRepository
 from gge_marketplace.common.infrastructure.unit_of_work import DjangoUnitOfWork
+from gge_marketplace.orders.application.analytics import GetProductSalesAnalyticsUseCase
 from gge_marketplace.orders.application.order import (
     AddItemToOrderUseCase,
     CreateOrderUseCase,
@@ -65,7 +66,14 @@ class AppContainer:
         return LoadOrdersFromXlsxToStagingUseCase(uow=self.uow, storage_service=self.task_file_storage)
 
     def transform_staging_to_orders_use_case(self) -> TransformStagingToOrdersUseCase:
-        return TransformStagingToOrdersUseCase(uow=self.uow, product_repository=self.product_repository, order_repository=self.order_repository)
+        return TransformStagingToOrdersUseCase(
+            uow=self.uow,
+            product_repository=self.product_repository,
+            order_repository=self.order_repository
+        )
+
+    def get_product_sales_analytics_use_case(self) -> GetProductSalesAnalyticsUseCase:
+        return GetProductSalesAnalyticsUseCase(order_repository=self.order_repository)
 
 
 container = AppContainer()

@@ -58,3 +58,11 @@ class Order(Timestamped):
         self.update_total_price()
 
         return item
+
+
+@attrs.define
+class ProductAnalyticsItem:
+    product_stock_keeping_unit: str
+    product_title: str
+    total_quantity: int
+    total_revenue: float
