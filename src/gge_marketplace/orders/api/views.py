@@ -15,6 +15,10 @@ from gge_marketplace.orders.api.serializers import (
 
 
 class OrderListAPIView(APIView):
+    @extend_schema(
+        summary="Список заказов",
+        responses={200: OrderResponseSerializer(many=True)}
+    )
     def get(self, request):
         repo = container.order_repository
         orders = repo.get_all()
@@ -22,6 +26,11 @@ class OrderListAPIView(APIView):
         serializer = OrderResponseSerializer(orders, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        summary="Создание заказа",
+        request=OrderCreateSerializer,
+        responses={200: OrderResponseSerializer()}
+    )
     def post(self, request):
         serializer = OrderCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -34,6 +43,10 @@ class OrderListAPIView(APIView):
 
 
 class OrderDetailAPIView(APIView):
+    @extend_schema(
+        summary="Информация о заказе",
+        responses={200: OrderResponseSerializer()}
+    )
     def get(self, request, order_id):
         repo = container.order_repository
         order = repo.get_by_id(order_id)
@@ -41,6 +54,10 @@ class OrderDetailAPIView(APIView):
         response_serializer = OrderResponseSerializer(order)
         return Response(response_serializer.data)
 
+    @extend_schema(
+        summary="Удаление заказа",
+        responses={200: OrderResponseSerializer()}
+    )
     def delete(self, request, order_id):
         use_case = container.delete_order_use_case()
         order = use_case.execute(id=order_id)
@@ -50,6 +67,10 @@ class OrderDetailAPIView(APIView):
 
 
 class OrderItemListAPIView(APIView):
+    @extend_schema(
+        summary="Информация о позиции заказа",
+        responses={200: OrderItemResponseSerializer(many=True)}
+    )
     def get(self, request, order_id):
         repo = container.order_repository
         order = repo.get_by_id(order_id)
@@ -57,6 +78,12 @@ class OrderItemListAPIView(APIView):
         serializer = OrderItemResponseSerializer(order.items, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        summary="Добавление позиции заказа",
+        description="Добавляет товар в заказ. Пересчитывает сумму заказа.",
+        request=OrderItemCreateSerializer,
+        responses={200: OrderItemResponseSerializer()}
+    )
     def post(self, request, order_id):
         serializer = OrderItemCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -69,6 +96,10 @@ class OrderItemListAPIView(APIView):
 
 
 class OrderItemDetailAPIView(APIView):
+    @extend_schema(
+        summary="Информация о позиции заказа",
+        responses={200: OrderItemResponseSerializer()}
+    )
     def get(self, request, order_id, item_id):
         use_case = container.get_item_from_order_use_case()
         item = use_case.execute(order_id=order_id, item_id=item_id)
@@ -76,6 +107,12 @@ class OrderItemDetailAPIView(APIView):
         response_serializer = OrderItemResponseSerializer(item)
         return Response(response_serializer.data)
 
+    @extend_schema(
+        summary="Обновление позиции заказа",
+        description="Обновляет позицию в заказе. Пересчитывает сумму заказа.",
+        request=OrderItemUpdateSerializer,
+        responses={200: OrderItemResponseSerializer(many=True)}
+    )
     def put(self, request, order_id, item_id):
         serializer = OrderItemUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -86,6 +123,11 @@ class OrderItemDetailAPIView(APIView):
         response_serializer = OrderItemResponseSerializer(item)
         return Response(response_serializer.data)
 
+    @extend_schema(
+        summary="Удаление позиции заказа",
+        description="Возвращает агрегированную информацию о количестве проданных единиц и выручке по каждому SKU за указанный период времени.",
+        responses={200: OrderItemResponseSerializer()}
+    )
     def delete(self, request, order_id, item_id):
         use_case = container.delete_item_from_order_use_case()
         item = use_case.execute(order_id=order_id, item_id=item_id)
