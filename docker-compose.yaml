@@ -18,23 +18,31 @@ services:
       - DJANGO_SECRET_KEY
       - CELERY_BROKER_URL
       - SQLITE_DB_DIR=/app/db
+      - FILE_STORAGE_BASE_PATH=/app/storage
+      - DJANGO_DEBUG
     volumes:
       - sqlite_data:/app/db
+      - shared_storage:/app/storage
     depends_on:
       - rabbitmq
 
   celery:
     build: .
     restart: always
-    command: celery -A gge_marketplace.config worker --loglevel=info
+    command: celery -A gge_marketplace.config.celery:app worker -Q heavy_pipelines --loglevel=info
     environment:
       - DJANGO_SECRET_KEY
       - CELERY_BROKER_URL
       - SQLITE_DB_DIR=/app/db
+      - FILE_STORAGE_BASE_PATH=/app/storage
+      - DJANGO_DEBUG
+      - PYTHONPATH=/app/src:/app/src/gge_marketplace
     volumes:
       - sqlite_data:/app/db
+      - shared_storage:/app/storage
     depends_on:
       - rabbitmq
 
 volumes:
   sqlite_data:
+  shared_storage:

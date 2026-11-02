@@ -4,6 +4,7 @@ from django.core.files.uploadedfile import UploadedFile
 from gge_marketplace.common.application.unit_of_work import UnitOfWork
 from gge_marketplace.pipelines.infrastructure.file_storage import TaskFileStorage
 from gge_marketplace.pipelines.models import PipelineTask, StagingOrderItem
+from gge_marketplace.pipelines.tasks import run_import_pipeline_task
 
 
 class InitializePipelineUseCase:
@@ -32,7 +33,7 @@ class InitializePipelineUseCase:
 
             task.save()
 
-        # transaction.on_commit(lambda: run_etl_pipeline_task.delay(task_id=task.id))
+        run_import_pipeline_task.delay(task.id)
 
         return task
 
