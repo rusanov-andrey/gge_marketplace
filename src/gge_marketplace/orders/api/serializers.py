@@ -29,3 +29,15 @@ class OrderResponseSerializer(TimeStampedSerializer):
     user_id = serializers.IntegerField()
     total_price = serializers.FloatField()
     items = OrderItemResponseSerializer(many=True)
+
+
+class AnalyticsRequestSerializer(serializers.Serializer):
+    date_from = serializers.DateField(format="%Y-%m-%d", help_text="Формат: YYYY-MM-DD")
+    date_to = serializers.DateField(format="%Y-%m-%d", help_text="Формат: YYYY-MM-DD")
+
+
+class AnalyticsResponseSerializer(serializers.Serializer):
+    product_stock_keeping_unit = serializers.CharField()
+    product_title = serializers.CharField()
+    total_quantity = serializers.IntegerField()
+    total_revenue = serializers.FloatField()

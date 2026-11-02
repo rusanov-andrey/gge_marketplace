@@ -84,3 +84,5 @@ docker compose down -v
 
 ## API
 API описано в Swagger: http://localhost:8000/api/docs/
+
+В том числе реализован метод аналитики http://localhost:8000/api/docs/#/v1/v1_orders_analytics_create

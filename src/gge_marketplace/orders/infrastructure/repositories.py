@@ -1,11 +1,15 @@
+import datetime
+
 from django.contrib.auth import get_user_model
+from django.db.models import F, Sum
 
 from gge_marketplace.common.domain.exceptions import ValidationDomainException
 from gge_marketplace.common.infrastructure.repositories import translate_db_errors
 from gge_marketplace.orders.domain.exceptions import OrderNotFoundDomainException
-from gge_marketplace.orders.domain.models import Order, OrderItem
+from gge_marketplace.orders.domain.models import Order, OrderItem, ProductAnalyticsItem
 from gge_marketplace.orders.domain.repositories import OrderRepository
 from gge_marketplace.orders.infrastructure.models import Order as DbOrder
+from gge_marketplace.orders.infrastructure.models import OrderItem as DbOrderItem
 
 User = get_user_model()
 
@@ -68,6 +72,34 @@ class DjangoOrderRepository(OrderRepository):
         db_order.save()
 
         return order
+
+    def get_product_sales_analytics(
+            self,
+            date_from: datetime.date,
+            date_to: datetime.date
+    ) -> list[ProductAnalyticsItem]:
+        sales = (
+            DbOrderItem.objects.filter(
+                order__created_at__date__gte=date_from,
+                order__created_at__date__lte=date_to
+            )
+            .values('product__stock_keeping_unit', 'product__title')
+            .annotate(
+                total_qty=Sum('quantity'),
+                total_rev=Sum(F('quantity') * F('price_on_buy'))
+            )
+            .order_by('-total_qty')
+        )
+
+        return [
+            ProductAnalyticsItem(
+                product_stock_keeping_unit=item['product__stock_keeping_unit'],
+                product_title=item['product__title'],
+                total_quantity=item['total_qty'],
+                total_revenue=item['total_rev']
+            )
+            for item in sales
+        ]
 
 
 class OrderMapper:
