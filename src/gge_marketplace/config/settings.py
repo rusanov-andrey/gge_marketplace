@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'gge_marketplace.catalog.apps.CatalogConfig',
     'gge_marketplace.orders.apps.OrdersConfig',
     'gge_marketplace.pipelines.apps.PipelinesConfig',
@@ -119,6 +120,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'EXCEPTION_HANDLER': 'gge_marketplace.common.infrastructure.exceptions.api_exception_handler',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 LOGGING = {
@@ -150,6 +152,14 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'GGE Marketplace backend',
+    'DESCRIPTION': 'API для управления пайплайнами импорта и обработки данных (XLSX в Staging и Orders)',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
 
 
