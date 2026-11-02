@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,6 +11,10 @@ from gge_marketplace.config.container import container
 
 
 class ProductListAPIView(APIView):
+    @extend_schema(
+        summary="Список товаров в каталоге",
+        responses={200: ProductResponseSerializer(many=True)}
+    )
     def get(self, request):
         repo = container.product_repository
         products = repo.get_all()
@@ -17,6 +22,11 @@ class ProductListAPIView(APIView):
         serializer = ProductResponseSerializer(products, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        summary="Добавление товара в каталог",
+        request=ProductCreateSerializer,
+        responses={200: ProductResponseSerializer()}
+    )
     def post(self, request):
         serializer = ProductCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -29,6 +39,10 @@ class ProductListAPIView(APIView):
 
 
 class ProductDetailAPIView(APIView):
+    @extend_schema(
+        summary="Информация о товаре в каталоге",
+        responses={200: ProductResponseSerializer()}
+    )
     def get(self, request, product_id):
         repo = container.product_repository
         product = repo.get_by_id(product_id)
@@ -36,6 +50,11 @@ class ProductDetailAPIView(APIView):
         serializer = ProductResponseSerializer(product)
         return Response(serializer.data)
 
+    @extend_schema(
+        summary="Обновление информации о товаре в каталоге",
+        request=ProductUpdateSerializer,
+        responses={200: ProductResponseSerializer()}
+    )
     def put(self, request, product_id):
         serializer = ProductUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -46,6 +65,10 @@ class ProductDetailAPIView(APIView):
         response_serializer = ProductResponseSerializer(product)
         return Response(response_serializer.data)
 
+    @extend_schema(
+        summary="Удаление товара из каталога",
+        responses={200: ProductResponseSerializer()}
+    )
     def delete(self, request, product_id):
         use_case = container.delete_product_use_case()
         product = use_case.execute(id=product_id)

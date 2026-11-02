@@ -58,6 +58,9 @@ class DjangoProductRepository(ProductRepository):
 
         return ProductMapper.to_domain(db_product)
 
+    @translate_db_errors({
+        'stock_keeping_unit': ValidationDomainException(field='stock_keeping_unit', message='Артикул уже занят'),
+    })
     def delete(self, product_id: int) -> Product:
         try:
             db_product: DbProduct = DbProduct.objects.get(pk=product_id)
