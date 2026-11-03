@@ -70,7 +70,6 @@ class DjangoProductRepository(ProductRepository):
         product = ProductMapper.to_domain(db_product)
 
         db_product.delete()
-        db_product.save()
 
         return product
 

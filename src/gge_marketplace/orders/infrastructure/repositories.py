@@ -69,7 +69,6 @@ class DjangoOrderRepository(OrderRepository):
         order = OrderMapper.to_domain(db_order)
 
         db_order.delete()
-        db_order.save()
 
         return order
 
