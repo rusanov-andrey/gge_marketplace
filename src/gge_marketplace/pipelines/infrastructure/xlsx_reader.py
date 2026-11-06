@@ -47,6 +47,7 @@ class XlsxIterator:
         # Читаем и валидируем первую строку (заголовки)
         try:
             raw_headers = next(self._rows_iterator)
+            self._processed_rows += 1
         except StopIteration:
             self.close()
             raise ValueError("Файл пуст или поврежден")
