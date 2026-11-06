@@ -1,5 +1,6 @@
 import datetime
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 
 from .models import Order, ProductAnalyticsItem
 
@@ -10,7 +11,7 @@ class OrderRepository(ABC):
         pass
 
     @abstractmethod
-    def get_all(self) -> list[Order]:
+    def get_all(self) -> Iterable[Order]:
         pass
 
     @abstractmethod
