@@ -1,3 +1,6 @@
+from typing import Callable
+
+from django.core.files import File
 from django.core.files.uploadedfile import UploadedFile
 
 from gge_marketplace.common.application.unit_of_work import UnitOfWork
@@ -42,9 +45,15 @@ class LoadOrdersFromXlsxToStagingUseCase:
     BATCH_SIZE = 5000  # Размер чанка для сохранения в БД
     MAX_PROGRESS_VALUE = 50  # Максимальное значение прогресса задачи. Остальное -- при импорте из staging в orders
 
-    def __init__(self, uow: UnitOfWork, storage_service: TaskFileStorage):
+    def __init__(
+            self,
+            uow: UnitOfWork,
+            storage_service: TaskFileStorage,
+            xlsx_iterator_factory: Callable[[File, list[str]], XlsxIterator] = XlsxIterator,
+    ):
         self.storage_service = storage_service
         self.uow = uow
+        self.xlsx_iterator_factory = xlsx_iterator_factory
         self.file_headers = ['order_id', 'user_email', 'sku', 'quantity', 'price_on_buy']
 
     def execute(self, task_id: int) -> None:
@@ -64,7 +73,7 @@ class LoadOrdersFromXlsxToStagingUseCase:
         with self.storage_service.open_task_file(file_path) as f:
             # Построчно читаем данные чанками
             staging_pool = []
-            with XlsxIterator(f, self.file_headers) as xslt_iterator:
+            with self.xlsx_iterator_factory(f, self.file_headers) as xslt_iterator:
                 for row in xslt_iterator:
                     item = StagingOrderItem(
                         task=task,

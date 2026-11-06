@@ -8,9 +8,6 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() in ['true', '1']
 
 ALLOWED_HOSTS: list[str] = []
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-MEDIA_ROOT = os.environ['FILE_STORAGE_BASE_PATH']
-
 
 # Application definition
 
@@ -56,16 +53,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-
-SQLITE_DB_DIR = os.environ['SQLITE_DB_DIR']
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': Path(SQLITE_DB_DIR) / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -163,7 +150,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 
-CELERY_BROKER_URL = os.environ['CELERY_BROKER_URL']
+CELERY_BROKER_URL = ''
 CELERY_RESULT_BACKEND = None
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
