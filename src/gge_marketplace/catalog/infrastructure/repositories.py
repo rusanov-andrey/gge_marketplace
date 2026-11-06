@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+
 from gge_marketplace.catalog.domain.exceptions import ProductNotFoundDomainException
 from gge_marketplace.catalog.domain.models import Product
 from gge_marketplace.catalog.domain.repositories import ProductRepository
@@ -7,12 +9,12 @@ from gge_marketplace.common.infrastructure.repositories import translate_db_erro
 
 
 class DjangoProductRepository(ProductRepository):
-    def get_all(self) -> list[Product]:
-        db_products = DbProduct.objects.all()
-        return [
+    def get_all(self) -> Iterator[Product]:
+        db_products = DbProduct.objects.all().iterator()
+        return (
             ProductMapper.to_domain(db_product)
             for db_product in db_products
-        ]
+        )
 
     def get_by_id(self, product_id) -> Product:
         try:
@@ -29,6 +31,12 @@ class DjangoProductRepository(ProductRepository):
             return None
 
         return ProductMapper.to_domain(db_product)
+
+    def get_by_stock_keeping_units(self, stock_keeping_units: set[str]) -> Iterator[Product]:
+        return (
+            ProductMapper.to_domain(db_product)
+            for db_product in DbProduct.objects.filter(stock_keeping_unit__in=stock_keeping_units).iterator()
+        )
 
     @translate_db_errors({
         'stock_keeping_unit': ValidationDomainException(field='stock_keeping_unit', message='Артикул уже занят'),

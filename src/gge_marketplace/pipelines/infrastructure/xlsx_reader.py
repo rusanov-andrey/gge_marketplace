@@ -4,7 +4,7 @@ import openpyxl
 from django.core.files import File
 
 
-class XsltIterator:
+class XlsxIterator:
     def __init__(self, file: File, column_names: list[str]) -> None:
         self.file = file
         self.column_names = [name.strip().lower() for name in column_names]

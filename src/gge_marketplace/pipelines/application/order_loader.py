@@ -2,7 +2,7 @@ from django.core.files.uploadedfile import UploadedFile
 
 from gge_marketplace.common.application.unit_of_work import UnitOfWork
 from gge_marketplace.pipelines.infrastructure.file_storage import TaskFileStorage
-from gge_marketplace.pipelines.infrastructure.xslt_reader import XsltIterator
+from gge_marketplace.pipelines.infrastructure.xlsx_reader import XlsxIterator
 from gge_marketplace.pipelines.models import PipelineTask, StagingOrderItem
 from gge_marketplace.pipelines.tasks import run_import_pipeline_task
 
@@ -64,7 +64,7 @@ class LoadOrdersFromXlsxToStagingUseCase:
         with self.storage_service.open_task_file(file_path) as f:
             # Построчно читаем данные чанками
             staging_pool = []
-            with XsltIterator(f, self.file_headers) as xslt_iterator:
+            with XlsxIterator(f, self.file_headers) as xslt_iterator:
                 for row in xslt_iterator:
                     item = StagingOrderItem(
                         task=task,

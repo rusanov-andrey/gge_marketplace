@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 
 from .models import Product
 
@@ -9,11 +10,15 @@ class ProductRepository(ABC):
         pass
 
     @abstractmethod
-    def get_all(self) -> list[Product]:
+    def get_all(self) -> Iterator[Product]:
         pass
 
     @abstractmethod
     def get_by_stock_keeping_unit(self, stock_keeping_unit: str) -> Product | None:
+        pass
+
+    @abstractmethod
+    def get_by_stock_keeping_units(self, stock_keeping_unit: set[str]) -> Iterator[Product]:
         pass
 
     @abstractmethod
