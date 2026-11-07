@@ -1,4 +1,5 @@
 import datetime
+from collections.abc import Iterable
 
 from django.contrib.auth import get_user_model
 from django.db.models import F, Sum
@@ -15,12 +16,12 @@ User = get_user_model()
 
 
 class DjangoOrderRepository(OrderRepository):
-    def get_all(self) -> list[Order]:
+    def get_all(self) -> Iterable[Order]:
         db_orders = DbOrder.objects.prefetch_related('items').all()
-        return [
+        return (
             OrderMapper.to_domain(db_order)
             for db_order in db_orders
-        ]
+        )
 
     def get_by_id(self, order_id) -> Order:
         try:
@@ -69,7 +70,6 @@ class DjangoOrderRepository(OrderRepository):
         order = OrderMapper.to_domain(db_order)
 
         db_order.delete()
-        db_order.save()
 
         return order
 

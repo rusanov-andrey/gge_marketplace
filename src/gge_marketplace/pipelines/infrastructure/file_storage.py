@@ -1,3 +1,4 @@
+from django.core.files import File
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import UploadedFile
 
@@ -12,5 +13,5 @@ class TaskFileStorage:
     def delete_file(self, file_path: str) -> None:
         default_storage.delete(file_path)
 
-    def open_task_file(self, file_path: str):
+    def open_task_file(self, file_path: str) -> File:
         return default_storage.open(file_path, 'rb')

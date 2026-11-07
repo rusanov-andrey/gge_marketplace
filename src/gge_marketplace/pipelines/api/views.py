@@ -65,12 +65,6 @@ class PipelineViewSet(ModelViewSet):
         except ValidationError as e:
             return Response({"error": e.message}, status=status.HTTP_400_BAD_REQUEST)
 
-        use_case = container.load_orders_from_xlsx_to_staging_use_case()
-        use_case.execute(task_id=pk)
-
-        use_case = container.transform_staging_to_orders_use_case()
-        use_case.execute(task_id=pk)
-
         return Response(
             {
                 "message": "Файл успешно загружен. Задача передана в Celery.",
